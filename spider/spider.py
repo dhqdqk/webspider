@@ -8,6 +8,10 @@ import sqlite3
 import cookielib
 import time
 
+def new_headers(user_agent='', referer=None):
+    if referer:
+        return {'User-Agent': user_agent; 'Referer': referer}
+    return {'User-Agent': user_agent}
 
 class Spider(object):
     def __init__(self, sqlit=None, cur=None, baseurl='', total=0):
@@ -138,7 +142,8 @@ class SpiderBaidu(Spider):
 
             #通过元组
             sql = 'insert into `article`(a_id,title,created_time,category,orgurl,content)'
-            values = "values('%s','%s','%s','%s','%s','%s')"%(aid,self.qutoSin(title),date,self.qutoSin(category),orgurl,self.qutoSin(content))
+            values = "values('%s','%s','%s','%s','%s','%s')"%(aid,self.qutoSin(title),
+                    date,self.qutoSin(category),orgurl,self.qutoSin(content))
             sql+=values
 
             #插入数据库
