@@ -3,7 +3,10 @@
 
 import urllib.request
 import urllib.error
+import urllib.parse
 import http.cookiejar
+import os
+import json
 
 '''
 http.cookiejar模块的主要作用是提供可存储cookie的对象，以便于与urllib2模块配合使用来访问Internet资源。
@@ -55,4 +58,20 @@ cookie3.load(filename, ignore_discard=True, ignore_expires=True)
 opener3 = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookie3))
 req = urllib.request.Request(url)
 res = opener3.open(req)
-print(res.read(500).decode('utf-8'))
+print(res.read(100).decode('utf-8'))
+
+# cookie登录百度
+baidu_cookie = 'baidu_cookie.txt'
+login_url = 'https://passport.baidu.com/v2/?login&tpl=mn&u=http%3A%2F%2Fwww.baidu.com%2F'
+cookie = http.cookiejar.MozillaCookieJar(baidu_cookie)
+opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookie))
+# 将用户名和密码打包成字节码
+postdata = urllib.parse.urlencode({
+            'userName': "dhqdqk",
+            'password': "dhq96dqkbd.."
+}).encode(encoding='UTF8')
+res = opener.open(login_url, postdata)
+cookie.save(ignore_discard=True, ignore_expires=True)
+tieba_url = 'https://tieba.baidu.com/index.html'
+res = opener.open(tieba_url)
+print(res.read().decode('utf-8'))
