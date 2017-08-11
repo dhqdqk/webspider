@@ -8,14 +8,14 @@ import re
 import os
 import sqlite3
 import http.cookiejar
-import thread
+import _thread
 import time
 
 def new_headers(user_agent=None, referer=None):
-    if !user_agent:
+    if not user_agent:
         user_agent = "Mozilla/5.0 (Windows NT 5.1; rv:6.0.2) Gecko/20100101 Firefox/6.0.2"
     if referer:
-        return {'User-Agent': user_agent; 'Referer': referer}
+        return {'User-Agent': user_agent, 'Referer': referer}
     return {'User-Agent': user_agent}
 
 class Spider(object):
@@ -34,7 +34,7 @@ class Spider(object):
         self.total = total
         self.user_agent = 'Mozilla/5.0 (Windows NT 5.1; rv:6.0.2) Gecko/20100101 Firefox/6.0.2'
         self.referer = None
-        self.header = new_headers(self.user_agent, self.referer)
+        self.headers = new_headers(self.user_agent, self.referer)
         self.timeout = 10
         self.page_index = 1
         self.pattern = ''
@@ -43,13 +43,13 @@ class Spider(object):
     def qutoSin(self, string):
         return string.replace("'", "")
 
-    def get_cookie(self, cookie_file, login_url=self.login_url):
+    def get_cookie(self, cookie_file, login_url):
         '''
         如果cookie存在，用现有cookie；没有则获取
         '''
         pass
 
-    def login(self, login_url=self.login_url):
+    def login(self, login_url):
         '''
         站点设定不允许非登录请求或限制资源获取的范围时，要通过cookie登录
         '''
@@ -59,13 +59,17 @@ class Spider(object):
         pass
 
     def get_page(self, page_index, debug=False):
-        '抓取单个页面'
+        '连接单个页面并获取html代码'
         pass
 
     def get_pages(self, page_index, debug=False):
         '''
         批量抓取网页内容
         '''
+        pass
+
+    def get_items(self, page_index):
+        '提取网页内容'
         pass
 
 
@@ -75,7 +79,7 @@ class SpiderBaidu(Spider):
         super(SpiderBaidu, self).__init__(sqlit=None, cur=None, baseurl="http://www.baidu.com", total=0)
         self.login_url = 'https://passport.baidu.com/v2/?login&tpl=mn&u=http%3A%2F%2Fwww.baidu.com%2F'
 
-    def login(self, user, pwd, login_url=self.login_url):
+    def login(self, user, pwd, login_url):
         cookie = http.cookielib.CookieJar()
         cookieProc = urllib.request.HTTPCookieProcessor(cookie)
         opener = urllib.request.build_opener(cookieProc)
