@@ -18,6 +18,35 @@ def new_headers(user_agent=None, referer=None):
         return {'User-Agent': user_agent, 'Referer': referer}
     return {'User-Agent': user_agent}
 
+
+class DelHTMLTag(object):
+    ''''
+    去除文本中的html标记和代码,img标签，超链接；
+    替换换行标签为\n，TD标签为\t，p标签为\n加两空格，br标签改为\n；
+    '''
+    rmImg = re.compile('<img.*?>| {7}|')
+    rmAddr = re.compile('<a.*?>|</a>')
+    rpLine = re.compile('<tr>|<div>|</div>|</p>')
+    rpTD = re.compile('<td>')
+    rpPara = re.compile('<p.*?>')
+    rpBr = re.compile('<br><br>|<br>')
+    rmScript = re.compile('<script>.*?</script>')
+    rmExtra = re.compile('<.*?>')
+    rmBlank = re.compile('\b*')
+    rmBLine = re.compile('\n[\s| ]*\r')
+
+    def replace(self, x):
+        x = re.sub(self.rmImg, "", x)
+        x = re.sub(self.rmAddr, "", x)
+        x = re.sub(self.rpLine, "\n", x)
+        x = re.sub(self.rpTD, "\t", x)
+        x = re.sub(self.rpPara, "\n  ", x)
+        x = re.sub(self.rpBr, "\n", x)
+        # x = re.sub(self.rmScript, '', x)
+        x = re.sub(self.rmExtra, "", x)
+        return x.strip()
+
+
 class Spider(object):
     def __init__(self, sqlit=None, cur=None, baseurl='', total=0):
         '''
@@ -27,6 +56,7 @@ class Spider(object):
         referer:如果主机站点要求验证请求合法性，则要加上
         pattern:提取网页内容时的正则匹配式，不同网站通常不同。
         login_url：站点的登录页面
+        tool: DdelHTMLTag的实例，调用方法replace()用于去除html标记
         '''
         self.sqlite = sqlit
         self.cur = cur
@@ -39,6 +69,7 @@ class Spider(object):
         self.page_index = 1
         self.pattern = ''
         self.login_url = ''
+        self.tool = DelHTMLTag()
 
     def qutoSin(self, string):
         return string.replace("'", "")
