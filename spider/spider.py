@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #coding:utf-8
 
 import urllib
@@ -74,17 +74,24 @@ class Spider(object):
     def qutoSin(self, string):
         return string.replace("'", "")
 
-    def get_cookie(self, cookie_file, login_url):
+    def get_cookie(self, cookie_file=''):
         '''
         如果cookie存在，用现有cookie；没有则获取
         '''
-        pass
+        if cookie_file:
+            pass
+        else:
+            self.cookies = http.cookiejar.CookieJar()
+            self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cookies))
 
-    def login(self, login_url):
+    def login(self, postdata, cookie_file=''):
         '''
         站点设定不允许非登录请求或限制资源获取的范围时，要通过cookie登录
         '''
-        pass
+        self.postdata = postdata
+        res = urllib.request.Request(self.login_url, self.postdata)
+        get_cookie(cookie_file)
+        res = self.opener.open(res)
 
     def created_db(self, db):
         pass

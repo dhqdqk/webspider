@@ -5,7 +5,16 @@ import urllib.error
 import re
 from spider.spider import Spider
 
-class TiebaSpider(Spider):
+
+class BaiduSpider(Spider):
+    def __init__(self):
+        super(BaiduSpider, self).__init__(None, None, "https://baidu.com/", 0)
+        self.login_url = 'https://passport.baidu.com/v2/?login&tpl=mn&u=http%3A%2F%2Fwww.baidu.com%2F'
+
+
+
+
+class TiebaSpider(BaiduSpider):
     def __init__(self):
         '''
         lz:发布主题的用户ID
@@ -16,18 +25,18 @@ class TiebaSpider(Spider):
         rs_tie_text: 匹配贴子页内容的正则表达式
         rs_reply_num : 匹配主题总回复数以及总页数
         '''
-        super(TiebaSpider, self).__init__(None, None, "http://tieba.baidu.com/", 0)
+        super(TiebaSpider, self).__init__()
+        self.baseurl = "https://tieba.baidu.com/"
         self.see_lz = '?see_lz=1'
         self.baname = ''
         self.tie_id = ''
         self.rs_tie_title = '<h3 class="core_title_txt.*?title=".*?">(.*?)</h3>'
-        self.rs_tie_text = ''
-        self.rs_reply_num = '<li class="l_reply_num.*?<span.*?>(.*?)</span>.*?<span.*?>(.*?)</span>.*?</li>'
-        # '<div class="l_post.*?<a class="p_author.*?>(.*?)</a>.*?<div id="post_content_.*?>(.*?)</div>'
         self.rs_tie_text = '<div id="post_content_.*?>(.*?)</div>'
+        self.rs_reply_num = '<li class="l_reply_num.*?<span.*?>(.*?)</span>.*?<span.*?>(.*?)</span>.*?</li>'
+        self.rs_ba_text = ''
         self.floor = 1
 
-    def get_page(self, tie_id, page_index, see_lz=False):
+    def get_page(self, tie_id, page_index=1, see_lz=False):
         '获取单个主题的html页面；主题页面数从1开始，按1递增。'
         if see_lz:
             url = self.baseurl + 'p/' + str(tie_id) + self.see_lz + '&pn=' + str(page_index)
@@ -42,7 +51,7 @@ class TiebaSpider(Spider):
             return None
         return response.read().decode('utf-8')
 
-    def get_ba(self, baname, page_point):
+    def get_ba(self, baname, page_point=0):
         '获取贴吧的主题清单；page_point按断点方式取值，从0开始，按50递增（下个断点为50）；'
         url = self.baseurl + 'f?kw=' + baname + '&ie=utf-8&pn=' + str(page_point)
         try:
@@ -72,6 +81,7 @@ class TiebaSpider(Spider):
             return None
 
     def get_tie_text(self, page):
+        '抓取页面的贴子内容'
         pattern = re.compile(self.rs_tie_text, re.S)
         items = re.findall(pattern, page)
         content = []
