@@ -5,8 +5,6 @@ import urllib.request
 import urllib.error
 import urllib.parse
 import http.cookiejar
-import os
-import json
 
 '''
 http.cookiejar模块的主要作用是提供可存储cookie的对象，以便于与urllib2模块配合使用来访问Internet资源。

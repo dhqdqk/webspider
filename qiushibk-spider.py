@@ -5,7 +5,7 @@ import urllib
 import urllib.request
 import urllib.error
 import re
-from spider.spider import Spider
+from myspider import Spider
 
 '''
 实践内容：
