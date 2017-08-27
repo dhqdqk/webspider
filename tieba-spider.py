@@ -2,6 +2,7 @@
 #coding: utf-8
 import urllib.request
 import urllib.error
+import urllib.parse
 import re
 from myspider import Spider
 
@@ -102,21 +103,24 @@ class TiebaSpider(BaiduSpider):
             content.append(self.tool.replace(i))
         return content
 
+    def searchba(self,baname, user, debug=None):
+        url = "http://tieba.baidu.com/f/search/res?ie=utf-8"
+        data = urllib.parse.urlencode({"kw1":baname, "tb":user}).encode("gbk")
+        req = urllib.request.Request(url, data, headers=self.headers)
+        res = urllib.request.urlopen(req)
+        return res.read().decode("gbk")
+
+
+    def searchall(self, user):
+        url = "http://tieba.baidu.com/f/search/res?ie=utf-8&qw="
+        data = urllib.parse.urlencode({"kw1": "", "tb": user}).encode("utf-8")
+        req = urllib.request.Request(url, data, headers=self.headers)
+        res = urllib.request.urlopen(req)
+        return res.read().decode("gbk")
+
 
 if __name__ == "__main__":
     b = TiebaSpider()
     print(b.baseurl)
-    #print(b.get_ba('ubuntu', 0))
-    b.tie_id = 3138733512
-    p = b.get_page(b.tie_id, 1, True)
-    t = b.get_reply_num(p)
-    print(t)
-    for i in b.get_tie_text(p):
-        print(i)
-        print(b.floor, '楼', '-' *30, '\n')
-        b.floor += 1
-    b.baname = 'ubuntu'
-    t = b.get_ba(b.baname, 0)
-    ts = b.get_titles(t)
-    for i in ts:
-        print(i)
+    print(b.searchba("健美", "炫彩703"))
+    print(b.searchall("炫彩703"))
