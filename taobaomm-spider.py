@@ -38,6 +38,8 @@ class TaobaommSpider(Spider):
 
     def create_dir(self, items, pdir="taobaomm"):
         'work-dir/taobaomm;在目录taobaomm下给美眉创建个人目录'
+        if pdir == 'taobaomm':
+            pdir = os.path.abspath(os.path.dirname(__file__)) + os.sep + pdir
         if not os.path.exists(pdir):
             os.makedirs(pdir)
         for i in items:
@@ -46,6 +48,8 @@ class TaobaommSpider(Spider):
                 os.mkdir(dir)
 
     def userdir(self, username, pdir="taobaomm"):
+        if pdir == 'taobaomm':
+            pdir = os.path.abspath(os.path.dirname(__file__)) + os.sep + pdir
         dir = pdir + os.sep + username
         if not os.path.exists(dir):
             os.mkdir(dir)
@@ -53,6 +57,7 @@ class TaobaommSpider(Spider):
 
     def get_userinfo(self, page):
         rs = ''
+        pass
 
     def get_albums(self, id):
         url = "https://mm.taobao.com/self/model_album.htm?user_id=%s" % id
@@ -73,4 +78,3 @@ if __name__ == "__main__":
     t.create_dir(i)
     pp = t.get_userpage(i[0][1])
     a = t.get_albums(i[0][1])
-    print(a)

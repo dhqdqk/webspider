@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 #coding:utf-8
 
-import urllib
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -34,6 +33,7 @@ class AddCookies(object):
             self.cookies = http.cookiejar.MozillaCookieJar(self.file)
         else:
             self.cookies = http.cookiejar.CookieJar()
+
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cookies))
 
     def load(self, file=""):
@@ -74,6 +74,22 @@ class DelHTMLTag(object):
         return x.strip()
 
 
+class SaveData(object):
+    def __init__(self, pdir=""):
+        if pdir:
+            if not pdir.endswith(os.sep):
+                pdir = pdir + os.sep
+            if not os.path.exists(pdir):
+                os.makedirs(pdir)
+        self.pdir = os.path.abspath(os.path.dirname(__file__)) + os.sep + pdir
+    
+    def new_dir(self, name):
+        dir = self.pdir + name
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+        return dir
+
+
 class Spider(object):
     def __init__(self, sqlit=None, cur=None, baseurl='', total=0):
         '''
@@ -89,7 +105,7 @@ class Spider(object):
         self.cur = cur
         self.baseurl = baseurl
         self.total = total
-        self.user_agent = 'Mozilla/5.0 (Windows NT 5.1; rv:6.0.2) Gecko/20100101 Firefox/6.0.2'
+        self.user_agent = None
         self.referer = None
         self.headers = new_headers(self.user_agent, self.referer)
         self.timeout = 10
