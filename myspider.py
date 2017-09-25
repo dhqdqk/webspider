@@ -79,11 +79,13 @@ class SaveData(object):
         if pdir:
             if not pdir.endswith(os.sep):
                 pdir = pdir + os.sep
-        if os.path.isabs(pdir):
-            self.pdir = pdir
+            if os.path.isabs(pdir):
+                self.pdir = pdir
+            else:
+                if not os.path.exists(pdir):
+                    os.makedirs(pdir)
+                self.pdir = os.path.abspath(os.path.dirname(__file__)) + os.sep + pdir
         else:
-            if not os.path.exists(pdir):
-                os.makedirs(pdir)
             self.pdir = os.path.abspath(os.path.dirname(__file__)) + os.sep + pdir
 
     def new_dir(self, name):
