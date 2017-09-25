@@ -82,12 +82,26 @@ class SaveData(object):
             if not os.path.exists(pdir):
                 os.makedirs(pdir)
         self.pdir = os.path.abspath(os.path.dirname(__file__)) + os.sep + pdir
-    
+
     def new_dir(self, name):
         dir = self.pdir + name
         if not os.path.exists(dir):
             os.makedirs(dir)
         return dir
+
+    def save_img(self, content, path):
+        f = open(path, 'wb')
+        f.write(content)
+        f.close()
+
+    def save_text(self, content, name,  path, ext="txt"):
+        file = path + os.sep + ext
+        f = open(file, "w+")
+        f.write(content.encode('utf-8'))
+
+    def get_extension(self, url):
+        extension = url.split('.')[-1]
+        return extension
 
 
 class Spider(object):
