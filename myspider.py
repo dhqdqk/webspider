@@ -76,6 +76,7 @@ class DelHTMLTag(object):
 
 class SaveData(object):
     def __init__(self, pdir=""):
+        'find the parent direction'
         if pdir:
             if not pdir.endswith(os.sep):
                 pdir = pdir + os.sep
@@ -88,6 +89,13 @@ class SaveData(object):
         else:
             self.pdir = os.path.abspath(os.path.dirname(__file__)) + os.sep + pdir
 
+    def chpdir(self, pdir):
+        'change the parent direction'
+        if os.path.isabs(pdir):
+            if not os.path.exists(pdir):
+                os.makedirs(pdir)
+            self.pdir = pdir
+
     def new_dir(self, name):
         dir = self.pdir + name
         if not os.path.exists(dir):
@@ -99,8 +107,11 @@ class SaveData(object):
         f.write(content)
         f.close()
 
-    def save_text(self, content, name,  path, ext="txt"):
-        file = path + os.sep + ext
+    def save_text(self, content, name,  path="", ext="txt"):
+        if path:
+            file = path + os.sep + name + "." + ext
+        else:
+            file = name + "." + ext
         f = open(file, "w+")
         f.write(content.encode('utf-8'))
 
@@ -116,9 +127,11 @@ class Spider(object):
         cur：存储数据文件的目录
         baseurl:指定抓爬的目标URL
         referer:如果主机站点要求验证请求合法性，则要加上
-        pattern:提取网页内容时的正则匹配式，不同网站通常不同。
+        pattern:提取网页内容时的正则匹配器，不同网站通常不同；信息可分为多条相似规则的内容
+        opattern:匹配单项特殊信息
         login_url：站点的登录页面
         tool: DdelHTMLTag的实例，调用方法replace()用于去除html标记
+        code：网页编码格式，默认为utf-8
         '''
         self.sqlite = sqlit
         self.cur = cur
@@ -130,8 +143,10 @@ class Spider(object):
         self.timeout = 10
         self.page_index = 1
         self.pattern = ''
+        self.opattern = ''
         self.login_url = ''
         self.tool = DelHTMLTag()
+        self.code = 'utf-8'
 
     def qutoSin(self, string):
         return string.replace("'", "")
@@ -145,19 +160,54 @@ class Spider(object):
     def created_db(self, db):
         pass
 
-    def get_page(self, page_index, debug=False):
-        '连接单个页面并获取html代码'
+    def newurl(self, page_num):
         pass
+
+    def newpattern(self, rs, tag=False):
+        if rs:
+            if tag:
+                return re.compile(rs)
+            else:
+                return re.compile(rs, re.S)
+        else:
+            print("invalid regex")
+            return None
+
+    def get_page(self, url, debug=False):
+        '连接单个页面并获取html代码'
+        try:
+            request = urllib.request.Request(url, headers=self.headers)
+            responce = urllib.request.urlopen(request)
+        except urllib.error.HTTPError as e:
+            if hasattr(e, "reason"):
+                print("failed to connect :", url, "\n", e.code, e.reason)
+            return None
+        try:
+            res = responce.read().decode(self.code)
+        except:
+            return responce.read()
+        return res
 
     def get_pages(self, page_index, debug=False):
         '''
-        批量抓取网页内容
+        批量抓取多个网页内容
         '''
         pass
 
-    def get_items(self, page_index):
-        '提取网页内容'
-        pass
+    def get_items(self, page):
+        '提取网页中相似内容'
+        try:
+            items = re.findall(self.pattern, page)
+        except:
+            print("TyeError")
+            return None
+        return items
+
+    def get_info(self, page):
+        'get special infomation from page'
+        info = re.search(self.opattern, page)
+        print(info)
+        return info.group()
 
 
 class SpiderBaidu(Spider):
