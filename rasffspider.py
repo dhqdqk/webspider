@@ -26,12 +26,24 @@ class RasffSpider(Spider):
 		page = self.get_page(self.url)
 		print(page)
 
+def check_gmo(file):
+	f = open(file, 'r')
+	fact = ["米", "麦", "面", "玉米"]
+	d = {i:0 for i in fact}
+	print(d)
+	for line in f.readlines():
+		for i in fact:
+			if i in line:
+				d[i] += 1
+				continue
+	f.close()
+	return d
 if __name__ == "__main__":
 	r = RasffSpider()
 	r.total = 280
 	r.filename = "rasff.txt"
 	# r.test(150)
-
+	'''
 	file = open(r.filename, 'w+')
 	title = "编号" + "\t" + "通报国" + "\t" + "通报产品/来源地" + "\t" + "通报原因" + "\t" + "通报日期" + "\n"
 	file.write(title)
@@ -54,3 +66,7 @@ if __name__ == "__main__":
 				with open(r.filename, 'a+') as f:
 					f.write(s)
 
+	'''
+	d = check_gmo(r.filename)
+	for i in d:
+		print(i,">>>", d[i])
