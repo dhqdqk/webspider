@@ -146,7 +146,6 @@ class Spider(object):
         self.opattern = ''
         self.login_url = ''
         self.tool = DelHTMLTag()
-        self.code = 'utf-8'
 
     def qutoSin(self, string):
         return string.replace("'", "")
@@ -155,7 +154,16 @@ class Spider(object):
         '''
         站点设定不允许非登录请求或限制资源获取的范围时，要通过cookie登录
         '''
-        pass
+        self.cookies = AddCookies()
+        self.cookies.new_cookie(cookie_file)
+        post = urllib.parse.encoding(postdata)
+        req = urllib.request.Request(url=self.login_url, post, headers=self.headers, timeout= self.timeout)
+        res = self.cookies.opener.urlopen(req).read(500)
+        if "passCookie" in res:
+            self.cookies.save()
+        else:
+            print("login fail")
+            return None
 
     def created_db(self, db):
         pass
@@ -173,7 +181,7 @@ class Spider(object):
             print("invalid regex")
             return None
 
-    def get_page(self, url, debug=False):
+    def get_page(self, url, code='utf-8'):
         '连接单个页面并获取html代码'
         try:
             request = urllib.request.Request(url, headers=self.headers)
@@ -183,7 +191,7 @@ class Spider(object):
                 print("failed to connect :", url, "\n", e.code, e.reason)
             return None
         try:
-            res = responce.read().decode(self.code)
+            res = responce.read().decode(code)
         except:
             return responce.read()
         return res

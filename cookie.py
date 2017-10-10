@@ -65,8 +65,8 @@ cookie = http.cookiejar.MozillaCookieJar(baidu_cookie)
 opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookie))
 # 将用户名和密码打包成字节码
 postdata = urllib.parse.urlencode({
-            'userName': "dhqdqk",
-            'password': "dhq96dqkbd.."
+            'userName': "yourid",
+            'password': "yourpasswd"
 }).encode(encoding='UTF8')
 res = opener.open(login_url, postdata)
 cookie.save(ignore_discard=True, ignore_expires=True)

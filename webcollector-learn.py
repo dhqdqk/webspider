@@ -22,9 +22,9 @@ info() — return the meta-information of the page, such as headers, in the form
 getcode() – return the HTTP status code of the response.
 '''
 response = urlopen(request)
-print(response.geturl())
-print(response.info())
-print(response.getcode())
+print("geturl():", response.geturl())
+print("info()", response.info())
+print("getcode()", response.getcode())
 print(response.read(100).decode('utf-8'))
 print('-' * 20)
 
