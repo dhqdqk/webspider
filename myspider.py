@@ -130,7 +130,7 @@ class Spider(object):
         pattern:提取网页内容时的正则匹配器，不同网站通常不同；信息可分为多条相似规则的内容
         opattern:匹配单项特殊信息
         login_url：站点的登录页面
-        tool: DdelHTMLTag的实例，调用方法replace()用于去除html标记
+        tool: DelHTMLTag的实例，调用方法replace()用于去除html标记
         code：网页编码格式，默认为utf-8
         '''
         self.sqlite = sqlit
@@ -157,10 +157,11 @@ class Spider(object):
         self.cookies = AddCookies()
         self.cookies.new_cookie(cookie_file)
         post = urllib.parse.encoding(postdata)
-        req = urllib.request.Request(url=self.login_url, post, headers=self.headers, timeout= self.timeout)
+        req = urllib.request.Request(url=self.login_url, post=post, headers=self.headers, timeout= self.timeout)
         res = self.cookies.opener.urlopen(req).read(500)
         if "passCookie" in res:
             self.cookies.save()
+            print("login successfully")
         else:
             print("login fail")
             return None
@@ -175,13 +176,12 @@ class Spider(object):
         if rs:
             if tag:
                 return re.compile(rs)
-            else:
-                return re.compile(rs, re.S)
+            return re.compile(rs, re.S)
         else:
             print("invalid regex")
             return None
 
-    def get_page(self, url, code='utf-8'):
+    def get_page(self, url, code='utf-8', debug=False):
         '连接单个页面并获取html代码'
         try:
             request = urllib.request.Request(url, headers=self.headers)
@@ -190,10 +190,14 @@ class Spider(object):
             if hasattr(e, "reason"):
                 print("failed to connect :", url, "\n", e.code, e.reason)
             return None
+        if debug:
+            print("undecode data:\n", responce.read())
         try:
             res = responce.read().decode(code)
         except:
             return responce.read()
+        if debug:
+            print("decode data:\n", res)
         return res
 
     def get_pages(self, page_index, debug=False):
